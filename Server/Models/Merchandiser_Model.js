@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const MerchandiserSChema = new Schema({
+const merchandiserSchema = new Schema({
     name:{
         type: String,
         required: true,
@@ -14,10 +14,13 @@ const MerchandiserSChema = new Schema({
         trim: true 
     },
 
-    stationCode:{
+    code:{
         type: String,
         required: true,
+        unique: true,
         trim: true
     }
 });
-mongoose.model('merchandisers', MerchandiserSchema);
+const Merchandiser = mongoose.model('Merchandiser', merchandiserSchema);
+
+module.exports = Merchandiser;

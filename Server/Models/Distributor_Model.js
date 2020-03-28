@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const DistributorSchema = new Schema({
+const distributorSchema = new Schema({
     name:{
         type: String,
         required: true,
@@ -14,4 +14,6 @@ const DistributorSchema = new Schema({
     }
 });
 
-mongoose.model('distributors', DistributorSchema);
+const Distributor = mongoose.model('Distributor', distributorSchema);
+
+module.exports = Distributor;

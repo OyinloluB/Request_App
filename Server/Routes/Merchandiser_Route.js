@@ -1,57 +1,64 @@
 const express = require('express');
 const router =  express.Router();
+const {check, validationResult} = require('express-validator');
+
+const Merchandiser = require('../Models/Merchandiser_Model')
 
 //Fetch all merchandiser details
-router.get('/', (req, res) => {
-    merchandiser.find()
-    .then(merchandiser => res.json())
-    .catch(err => res.status(400).json('Error'+ err))
+router.get('/', async (req, res) => {
+    try{
+        const merchandisers = await Merchandiser.find()
+        res.json(merchandisers)
+    }
+    catch(err){
+        err => res.status(400).json('Error'+ err)
+    } 
 });
 
 //Fetch a single merchandiser detail
 
-router.get('/:_id', (req, res) => {
-    merchandiser.findById(req.params.id)
-    .then(merchandiser => res.json())
-    .catch(err => res.status(400).json('Error' + err))
-})
+router.get('/:_id', async (req, res) => {
+    try{
+        const merchandiser = await Merchandiser.findById(req.params.id);
+        res.json(merchandiser)
+    }
+    catch(err){
+        res.status(400).json('Error' + err)
+    }
+});
 
 //Create new merchandiser
- router.post('/add', async(req, res) => {
+ router.post('/', [
+     check('name', 'Name is required').not().isEmpty(),
+     check('location', 'Please enter a location').not().isEmpty(),
+     check('code', 'Please enter your code').not().isEmpty(),
+    ], async (req, res) => {
 
-    let errors = [];
-    if(!req.body.name){
-        errors.push({text: 'Please add a name'});
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        res.status(400).json({errors: errors.array()})
     }
-    if(!req.body.location){
-        errors.push({text: 'Please add location'});
-    }
-    if(errors.length > 0){
-        res.render('/add', {
-            errors: errors,
-            name: req.body.name,
-            location: req.body.location
-        })
-    }
-    else{
+    const {name, location, code} = req.body;
 
-        const merchandiser = new Merchandiser({
-            name: req.body.name,
-            location: req.body.location,
-            code: req.body.code 
-        })
-        try{
-            const savedMerchandiser = await merchandiser.save();
-            res.json(savedMerchandiser); 
+    try{
+
+        let merchandiser = await merchandiser.findOne({name, location});
+
+        if(merchandiser){
+            res.status(400).json({message: 'User already exists'});
         }
-        catch(err){
-            res.status(400).json({message: err})
-        };
+        merchandiser = new Merchandiser({
+        name,
+        location,
+        code
+        });
+        await merchandiser.save();
+        res.send('User saved')
     }
-    
-    
- });
+    catch(err){
+        res.status(500).json({message: err})
+    };
 
- router.update('/')
+});
 
 module.exports = router;

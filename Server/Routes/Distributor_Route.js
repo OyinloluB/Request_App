@@ -1,6 +1,9 @@
 const express = require('express');
 const router =  express.Router();
+const jwt = require('jsonwebtoken');
 const {check, validationResult} = require('express-validator');
+require('dotenv/config');
+
 
 const Distributor = require('../Models/Distributor_Model');
 
@@ -49,7 +52,17 @@ router.post('/', [
         });
 
         await distributor.save();
-        res.send('User saved');
+        const payload = {
+            distributor:{
+                id: distributor.id
+            }
+        }
+    jwt.sign(payload, process.env.jwtSecret, {
+        expiresIn: 3600
+    }, (err, token) => {
+        if(err) throw err;
+        res.json({ token });
+    });
     }    
     catch(err){
         res.status(500).json({ message: err})

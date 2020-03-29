@@ -7,6 +7,7 @@ require('dotenv/config');
 
 const Distributor = require('../Models/Distributor_Model');
 
+// Fetch all distributors
 router.get('/', async (req, res) => {
     try{
         const distributors = await Distributor.find();
@@ -17,9 +18,10 @@ router.get('/', async (req, res) => {
     }
 });
 
+// Fetch a single distributor by id
 router.get('/:_id', async (req, res) =>{
     try{
-        const distributor = await Distributor.findById(req.params.id);
+        const distributor = await Distributor.findById(req.params._id);
         res.json(distributor)
     }
     catch(err ){
@@ -27,6 +29,7 @@ router.get('/:_id', async (req, res) =>{
     }
 });
 
+// Register a new distributor
 router.post('/', [
     check('name', 'Name is required').not().isEmpty(),
     check('location', 'Please enter a location').not().isEmpty(),
@@ -43,7 +46,7 @@ router.post('/', [
         let distributor = await Distributor.findOne({name, location});
 
         if(distributor) {
-            res.status(400).json({message: 'User already existd'});
+            res.status(400).json({message: 'User already exists'});
         }
 
         distributor = new Distributor({
@@ -57,12 +60,12 @@ router.post('/', [
                 id: distributor.id
             }
         }
-    jwt.sign(payload, process.env.jwtSecret, {
-        expiresIn: 3600
-    }, (err, token) => {
-        if(err) throw err;
-        res.json({ token });
-    });
+        jwt.sign(payload, process.env.jwtSecret, {
+            expiresIn: 3600
+        }, (err, token) => {
+            if(err) throw err;
+            res.json({ token });
+        });
     }    
     catch(err){
         res.status(500).json({ message: err})

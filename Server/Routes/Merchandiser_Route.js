@@ -2,7 +2,6 @@ const express = require('express');
 const router =  express.Router();
 const jwt = require('jsonwebtoken');
 require('dotenv/config');
-
 const {check, validationResult} = require('express-validator');
 
 const Merchandiser = require('../Models/Merchandiser_Model')
@@ -22,7 +21,7 @@ router.get('/', async (req, res) => {
 
 router.get('/:_id', async (req, res) => {
     try{
-        const merchandiser = await Merchandiser.findById(req.params.id);
+        const merchandiser = await Merchandiser.findById(req.params._id);
         res.json(merchandiser)
     }
     catch(err){
@@ -45,7 +44,7 @@ router.get('/:_id', async (req, res) => {
 
     try{
 
-        let merchandiser = await merchandiser.findOne({name, location});
+        let merchandiser = await Merchandiser.findOne({name, location});
 
         if(merchandiser){
             res.status(400).json({message: 'User already exists'});
@@ -62,12 +61,12 @@ router.get('/:_id', async (req, res) => {
                 id: distributor.id
             }
         }
-    jwt.sign(payload, process.env.jwtSecret, {
-        expiresIn: 3600
-    }, (err, token) => {
-        if(err) throw err;
-        res.json({ token });
-    });
+        jwt.sign(payload, process.env.jwtSecret, {
+            expiresIn: 36000
+        }, (err, token) => {
+            if(err) throw err;
+            res.json({ token });
+        });
     }
     catch(err){
         res.status(500).json({message: err})

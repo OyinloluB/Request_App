@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
 router.get('/:_id', async (req, res) => {
     
     try{
-        const requests = await Request.findById()
+        const requests = await Request.findById(req.params._id)
         res.json(requests)
     }
     catch(err){

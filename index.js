@@ -1,12 +1,14 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
+const cors = require('cors')
 const path = require('path');
 
 require('dotenv/config');
 
 // Initialize middleware
 app.use(express.json({extended: false}));
+app.use(cors())
 
 const distributorRoute = require('./Server/Routes/Distributor_Route');
 const merchandiserRoute = require('./Server/Routes/Merchandiser_Route');
